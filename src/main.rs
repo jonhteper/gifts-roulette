@@ -106,7 +106,7 @@ fn cli() -> Result<()> {
 }
 
 fn main() {
-    println!("Starting Gifts...");
+    println!("Starting Gift Exchange...");
     match cli() {
         Err(e) => panic!("Fatal error:\n{:?}", e),
         Ok(()) => println!("No errors"),

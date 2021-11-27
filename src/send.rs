@@ -35,7 +35,7 @@ impl MailerClient {
     pub fn send_mail(&mut self, email: SendableEmail) -> Result<()> {
         let r = self.transport.send(email).wrap_err("Error sending mail")?;
 
-        println!("{:?}", r.message);
+        println!("Send email, message: {:?}", r.message);
 
         Ok(())
     }
