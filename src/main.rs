@@ -83,6 +83,8 @@ fn shuffle_and_send(args: &Args) -> Result<()> {
         .run()
         .wrap_err("Error running shuffle function and saving data")?;
 
+    let _ = roulette.send_emails().wrap_err("Error sending emails")?;
+
     Ok(())
 }
 

@@ -1,5 +1,7 @@
+use crate::send::MailerClient;
 use bcrypt::{hash, verify, DEFAULT_COST};
 use eyre::{eyre, ContextCompat, Result, WrapErr};
+use lettre_email::{Email, EmailBuilder};
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use serde::{Deserialize, Serialize};
@@ -101,8 +103,7 @@ impl Roulette {
         let mut couples = Couples::new();
 
         for c in &self.couples.couples {
-            let hashed = hash(c[1].clone(), DEFAULT_COST)
-                .wrap_err("Error creating hash")?;
+            let hashed = hash(c[1].clone(), DEFAULT_COST).wrap_err("Error creating hash")?;
             couples.couples.push(vec![c[0].clone(), hashed]);
         }
 
@@ -145,7 +146,49 @@ impl Roulette {
         Ok(())
     }
 
+    fn get_participant(&self, name: &str) -> Option<Participant> {
+        for p in &self.participants {
+            if p.name == name {
+                return Some(p.clone());
+            }
+        }
 
+        None
+    }
+
+    fn create_email(client: &MailerClient, data: Participant) -> Result<Email> {
+        let mail = EmailBuilder::new()
+            .to(data.email)
+            .from(client.get_user())
+            .subject("Gift Exchange")
+            .text(format!(
+                "Your gift is for: {}\nContext:{}",
+                data.name, data.info
+            ))
+            .build()
+            .wrap_err("Error building email")?;
+
+        Ok(mail)
+    }
+
+    pub fn send_emails(&self) -> Result<()> {
+        let mut mail_client = MailerClient::new().wrap_err("Error creating Mailer Client")?;
+
+        println!("Sending emails...");
+        for couple in &self.couples.couples {
+            let benefited = ContextCompat::context(
+                self.get_participant(&couple[1]),
+                "Participant is not in list",
+            )?;
+            let email =
+                Roulette::create_email(&mail_client, benefited).wrap_err("Error creating email")?;
+            let _ = mail_client
+                .send_mail(email.into())
+                .wrap_err("Error sending email")?;
+        }
+
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone)]
