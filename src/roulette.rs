@@ -45,8 +45,9 @@ impl Roulette {
             "Error in to-str conversion",
         )?
         .clone();
-        if extension_str == "json" {
-            eyre!("Bad extension, only .json files");
+
+        if extension_str != "json" {
+            return Err(eyre!("Bad extension, only .json files"));
         }
 
         Ok(Roulette {
