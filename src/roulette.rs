@@ -89,7 +89,7 @@ impl Roulette {
                 .name;
         let last = ContextCompat::context(
             self.participants.get(self.participants.len() - 1),
-            "Not participants in Roulette",
+            "Not enough participants in Roulette",
         )?;
 
         self.couples.couples.push(vec![last.name.clone(), first]);
@@ -101,8 +101,8 @@ impl Roulette {
         let mut couples = Couples::new();
 
         for c in &self.couples.couples {
-            let hashed = hash(c[1].clone(), DEFAULT_COST).wrap_err("Error creating hash")?;
-
+            let hashed = hash(c[1].clone(), DEFAULT_COST)
+                .wrap_err("Error creating hash")?;
             couples.couples.push(vec![c[0].clone(), hashed]);
         }
 
@@ -144,6 +144,8 @@ impl Roulette {
 
         Ok(())
     }
+
+
 }
 
 #[derive(Debug, Clone)]

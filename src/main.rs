@@ -27,16 +27,6 @@ struct Args {
     store_path: String,
 }
 
-impl Args {
-    fn new() -> Self {
-        Args {
-            action: "".to_string(),
-            excel_path: "".to_string(),
-            store_path: "".to_string(),
-        }
-    }
-}
-
 fn cli_args() -> Result<Args> {
     let matches = App::new("Gifts Roulette")
         .version("0.1.0")
@@ -116,9 +106,7 @@ fn cli() -> Result<()> {
 fn main() {
     println!("Starting Gifts...");
     match cli() {
-        Err(e) => {
-            panic!("Fatal error:\n{:?}", e);
-        }
-        Ok(()) => println!("No errrors"),
+        Err(e) => panic!("Fatal error:\n{:?}", e),
+        Ok(()) => println!("No errors"),
     }
 }
